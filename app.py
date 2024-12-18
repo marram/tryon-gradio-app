@@ -79,7 +79,7 @@ def make_api_request(session, url, headers, data=None, method="GET", max_retries
 def get_tryon_result(
     model_image,
     garment_image,
-    photo_type,
+    garment_photo_type,
     category,
     nsfw_filter,
     cover_feet,
@@ -98,12 +98,11 @@ def get_tryon_result(
     model_image, garment_image = map(encode_img_to_base64, [model_image, garment_image])
 
     # prepare data for API request
-    category = CATEGORY_API_MAPPING[category]
     data = {
         "model_image": model_image,
         "garment_image": garment_image,
-        "flat_lay": photo_type == "Flat Lay",
-        "category": category,
+        "garment_photo_type": garment_photo_type.lower(),
+        "category": CATEGORY_API_MAPPING[category],
         "nsfw_filter": nsfw_filter,
         "cover_feet": cover_feet,
         "adjust_hands": adjust_hands,
@@ -202,7 +201,9 @@ with gr.Blocks(css=CUSTOM_CSS, theme=gr.themes.Monochrome(radius_size=sizes.radi
             )
         with gr.Column():
             garment_image = gr.Image(label="Garment Image", type="numpy", format="png")
-            photo_type = gr.Radio(choices=["Flat Lay", "Model"], label="Select Photo Type")
+            garment_photo_type = gr.Radio(
+                choices=["Auto", "Flat-Lay", "Model"], label="Select Photo Type", value="Auto"
+            )
             category = gr.Radio(choices=["Top", "Bottom", "Full-body"], label="Select Category")
 
             example_garment = gr.Examples(
@@ -215,10 +216,10 @@ with gr.Blocks(css=CUSTOM_CSS, theme=gr.themes.Monochrome(radius_size=sizes.radi
             )
 
         with gr.Column():
-            result_gallery = gr.Gallery(label="Try-on Results", show_label=True, elem_id="gallery")
+            result_gallery = gr.Gallery(label="Try-On Results", show_label=True, elem_id="gallery")
             run_button = gr.Button("Run")
             with gr.Accordion("Sampling Controls", open=False):
-                guidance_scale = gr.Slider(minimum=1.5, maximum=5, value=2.0, step=0.1, label="Guidance Scale")
+                guidance_scale = gr.Slider(minimum=1.5, maximum=3, value=2.0, step=0.1, label="Guidance Scale")
                 timesteps = gr.Slider(minimum=10, maximum=50, step=1, value=50, label="Timesteps")
                 seed = gr.Number(label="Seed", value=42, precision=0)
                 num_samples = gr.Slider(minimum=1, maximum=4, step=1, value=1, label="Number of Samples")
@@ -228,7 +229,7 @@ with gr.Blocks(css=CUSTOM_CSS, theme=gr.themes.Monochrome(radius_size=sizes.radi
         inputs=[
             model_image,
             garment_image,
-            photo_type,
+            garment_photo_type,
             category,
             nsfw_filter,
             cover_feet,
