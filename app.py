@@ -81,13 +81,12 @@ def get_tryon_result(
     garment_image,
     garment_photo_type,
     category,
+    mode,
     nsfw_filter,
     cover_feet,
     adjust_hands,
     restore_background,
     restore_clothes,
-    guidance_scale,
-    timesteps,
     seed,
     num_samples,
 ):
@@ -103,13 +102,12 @@ def get_tryon_result(
         "garment_image": garment_image,
         "garment_photo_type": garment_photo_type.lower(),
         "category": CATEGORY_API_MAPPING[category],
+        "mode": mode.lower(),
         "nsfw_filter": nsfw_filter,
         "cover_feet": cover_feet,
         "adjust_hands": adjust_hands,
         "restore_background": restore_background,
         "restore_clothes": restore_clothes,
-        "guidance_scale": guidance_scale,
-        "timesteps": timesteps,
         "seed": seed,
         "num_samples": num_samples,
     }
@@ -218,11 +216,10 @@ with gr.Blocks(css=CUSTOM_CSS, theme=gr.themes.Monochrome(radius_size=sizes.radi
         with gr.Column():
             result_gallery = gr.Gallery(label="Try-On Results", show_label=True, elem_id="gallery")
             run_button = gr.Button("Run")
-            with gr.Accordion("Sampling Controls", open=False):
-                guidance_scale = gr.Slider(minimum=1.5, maximum=3, value=2.0, step=0.1, label="Guidance Scale")
-                timesteps = gr.Slider(minimum=10, maximum=50, step=1, value=50, label="Timesteps")
-                seed = gr.Number(label="Seed", value=42, precision=0)
-                num_samples = gr.Slider(minimum=1, maximum=4, step=1, value=1, label="Number of Samples")
+            mode = gr.Radio(choices=["Performance", "Balanced", "Quality"], label="Select Run Mode", value="Balanced")
+
+            seed = gr.Number(label="Seed", value=42, precision=0)
+            num_samples = gr.Slider(minimum=1, maximum=4, step=1, value=1, label="Number of Samples")
 
     run_button.click(
         fn=get_tryon_result,
@@ -231,13 +228,12 @@ with gr.Blocks(css=CUSTOM_CSS, theme=gr.themes.Monochrome(radius_size=sizes.radi
             garment_image,
             garment_photo_type,
             category,
+            mode,
             nsfw_filter,
             cover_feet,
             adjust_hands,
             restore_background,
             restore_clothes,
-            guidance_scale,
-            timesteps,
             seed,
             num_samples,
         ],
