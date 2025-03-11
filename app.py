@@ -28,7 +28,7 @@ assert FASHN_API_KEY, "Please set the FASHN_API_KEY environment variable"
 
 # ----------------- HELPER FUNCTIONS ----------------- #
 
-CATEGORY_API_MAPPING = {"Top": "tops", "Bottom": "bottoms", "Full-body": "one-pieces"}
+CATEGORY_API_MAPPING = {"Auto": "auto", "Top": "tops", "Bottom": "bottoms", "Full-body": "one-pieces"}
 
 
 def opencv_load_image_from_http(url: str) -> np.ndarray:
@@ -202,7 +202,7 @@ with gr.Blocks(css=CUSTOM_CSS, theme=gr.themes.Monochrome(radius_size=sizes.radi
             garment_photo_type = gr.Radio(
                 choices=["Auto", "Flat-Lay", "Model"], label="Select Photo Type", value="Auto"
             )
-            category = gr.Radio(choices=["Top", "Bottom", "Full-body"], label="Select Category")
+            category = gr.Radio(choices=["Auto", "Top", "Bottom", "Full-body"], label="Select Category", value="Auto")
 
             example_garment = gr.Examples(
                 inputs=garment_image,
