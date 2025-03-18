@@ -82,7 +82,7 @@ def get_tryon_result(
     garment_photo_type,
     category,
     mode,
-    nsfw_filter,
+    moderation_level,
     cover_feet,
     adjust_hands,
     restore_background,
@@ -103,7 +103,7 @@ def get_tryon_result(
         "garment_photo_type": garment_photo_type.lower(),
         "category": CATEGORY_API_MAPPING[category],
         "mode": mode.lower(),
-        "nsfw_filter": nsfw_filter,
+        "moderation_level": moderation_level,
         "cover_feet": cover_feet,
         "adjust_hands": adjust_hands,
         "restore_background": restore_background,
@@ -188,7 +188,7 @@ with gr.Blocks(css=CUSTOM_CSS, theme=gr.themes.Monochrome(radius_size=sizes.radi
                 adjust_hands = gr.Checkbox(label="Adjust Hands", value=False)
                 restore_background = gr.Checkbox(label="Restore Background", value=False)
                 restore_clothes = gr.Checkbox(label="Restore Clothes", value=False)
-                nsfw_filter = gr.Checkbox(label="NSFW Filter", value=True)
+                moderation_level = gr.Radio(choices=["none", "permissive", "conservative"], label="Content Moderation Level", value="permissive")
 
             example_model = gr.Examples(
                 inputs=model_image,
@@ -229,7 +229,7 @@ with gr.Blocks(css=CUSTOM_CSS, theme=gr.themes.Monochrome(radius_size=sizes.radi
             garment_photo_type,
             category,
             mode,
-            nsfw_filter,
+            moderation_level,
             cover_feet,
             adjust_hands,
             restore_background,
