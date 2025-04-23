@@ -44,9 +44,6 @@ More on this can be found in the [Gradio documentation](https://gradio.app/docs)
 ### Helpful Guides and Documentation
 
 To get the most out of the FASHN API, we recommend to read the following guides to better understand all node features and parameters:
-1. [FASHN Features Guide: Part I (Model & Garment Controls)](https://fashn.ai/blog/getting-the-best-virtual-try-on-results-part-i)
-2. [FASHN Features Guide: Part II (Sampling Controls)](https://fashn.ai/blog/getting-the-best-virtual-try-on-results-part-ii)
-
-You can also review the official [API Docs](https://docs.fashn.ai/) for a concise summary of each of the parameters function and usage.
-
+1. [API Parameters Guide](https://docs.fashn.ai/guides/api-parameters-guide)
+2. [Official API Docs](https://docs.fashn.ai/fashn-api/endpoints#request)
 
