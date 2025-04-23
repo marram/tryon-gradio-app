@@ -83,16 +83,13 @@ def get_tryon_result(
     category,
     mode,
     moderation_level,
-    cover_feet,
-    adjust_hands,
-    restore_background,
-    restore_clothes,
+    segmentation_free,
     seed,
     num_samples,
 ):
     logger.info("Starting new try-on request...")
 
-    # preprocessing: convert to RGB, resize, encode to base64
+    # preprocessing: convert to RGB, encode to base64
     model_image, garment_image = map(lambda x: cv2.cvtColor(x, cv2.COLOR_RGB2BGR), [model_image, garment_image])
     model_image, garment_image = map(encode_img_to_base64, [model_image, garment_image])
 
@@ -104,10 +101,7 @@ def get_tryon_result(
         "category": CATEGORY_API_MAPPING[category],
         "mode": mode.lower(),
         "moderation_level": moderation_level,
-        "cover_feet": cover_feet,
-        "adjust_hands": adjust_hands,
-        "restore_background": restore_background,
-        "restore_clothes": restore_clothes,
+        "segmentation_free": segmentation_free,
         "seed": seed,
         "num_samples": num_samples,
     }
@@ -145,7 +139,7 @@ def get_tryon_result(
             raise gr.Error(f"Prediction failed with id {pred_id}: {status_data.get('error')}")
 
         logger.info(f"Prediction status: {status_data['status']}")
-        time.sleep(3)
+        time.sleep(2)
 
     # get the result images
     result_imgs = []
@@ -182,14 +176,7 @@ with gr.Blocks(css=CUSTOM_CSS, theme=gr.themes.Monochrome(radius_size=sizes.radi
     with gr.Row():
         with gr.Column():
             model_image = gr.Image(label="Model Image", type="numpy", format="png")
-
-            with gr.Accordion("Model Image Controls", open=False):
-                cover_feet = gr.Checkbox(label="Cover Feet", value=False)
-                adjust_hands = gr.Checkbox(label="Adjust Hands", value=False)
-                restore_background = gr.Checkbox(label="Restore Background", value=False)
-                restore_clothes = gr.Checkbox(label="Restore Clothes", value=False)
-                moderation_level = gr.Radio(choices=["none", "permissive", "conservative"], label="Content Moderation Level", value="permissive")
-
+            segmentation_free = gr.Checkbox(label="Segmentation Free", value=True)
             example_model = gr.Examples(
                 inputs=model_image,
                 examples_per_page=10,
@@ -203,7 +190,7 @@ with gr.Blocks(css=CUSTOM_CSS, theme=gr.themes.Monochrome(radius_size=sizes.radi
                 choices=["Auto", "Flat-Lay", "Model"], label="Select Photo Type", value="Auto"
             )
             category = gr.Radio(choices=["Auto", "Top", "Bottom", "Full-body"], label="Select Category", value="Auto")
-
+            moderation_level = gr.Radio(choices=["none", "permissive", "conservative"], label="Content Moderation Level", value="permissive")
             example_garment = gr.Examples(
                 inputs=garment_image,
                 examples_per_page=10,
@@ -230,10 +217,7 @@ with gr.Blocks(css=CUSTOM_CSS, theme=gr.themes.Monochrome(radius_size=sizes.radi
             category,
             mode,
             moderation_level,
-            cover_feet,
-            adjust_hands,
-            restore_background,
-            restore_clothes,
+            segmentation_free,
             seed,
             num_samples,
         ],
