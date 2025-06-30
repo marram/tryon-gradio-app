@@ -41,11 +41,20 @@ def opencv_load_image_from_http(url: str) -> np.ndarray:
 
 
 def encode_img_to_base64(img: np.array) -> str:
-    """Encodes an image as a JPEG in Base64 format."""
-    img = cv2.imencode(".jpg", img)[1].tobytes()
+    """Resizes and encodes an image as a JPEG in Base64 format."""
+    # Resize to max 2000px on largest dimension
+    height, width = img.shape[:2]
+    if max(height, width) > 2000:
+        if height > width:
+            new_height, new_width = 2000, int(width * 2000 / height)
+        else:
+            new_width, new_height = 2000, int(height * 2000 / width)
+        img = cv2.resize(img, (new_width, new_height), interpolation=cv2.INTER_AREA)
+    
+    # Encode with 95% quality
+    img = cv2.imencode(".jpg", img, [cv2.IMWRITE_JPEG_QUALITY, 95])[1].tobytes()
     img = base64.b64encode(img).decode("utf-8")
-    img = f"data:image/jpeg;base64,{img}"
-    return img
+    return f"data:image/jpeg;base64,{img}"
 
 
 def parse_checkboxes(checkboxes):
@@ -94,7 +103,7 @@ def get_tryon_result(
     model_image, garment_image = map(encode_img_to_base64, [model_image, garment_image])
 
     # prepare data for API request
-    data = {
+    model_inputs = {
         "model_image": model_image,
         "garment_image": garment_image,
         "garment_photo_type": garment_photo_type.lower(),
@@ -105,6 +114,10 @@ def get_tryon_result(
         "seed": seed,
         "num_samples": num_samples,
     }
+    api_inputs = {
+        "model_name": "tryon-v1.6",
+        "inputs": model_inputs,
+    }
 
     # make API request
     session = requests.Session()
@@ -112,7 +125,7 @@ def get_tryon_result(
 
     try:
         response_data = make_api_request(
-            session, f"{FASHN_ENDPOINT_URL}/run", headers=headers, data=data, method="POST"
+            session, f"{FASHN_ENDPOINT_URL}/run", headers=headers, data=api_inputs, method="POST"
         )
         pred_id = response_data.get("id")
         logger.info(f"Prediction ID: {pred_id}")
