@@ -20,9 +20,14 @@ git clone https://github.com/fashn-AI/tryon-gradio-app
 cd tryon-gradio-app
 ```
 
-2. Install the required packages:
+2. Install the required packages using uv:
 ```bash
-pip install -r requirements.txt
+uv sync
+```
+
+If you don't have uv installed, you can install it with:
+```bash
+curl -LsSf https://astral.sh/uv/install.sh | sh
 ```
 
 ### Usage
@@ -33,7 +38,7 @@ export FASHN_API_KEY="your-api-key"
 ```
 2. Run the app:
 ```bash
-python app.py
+uv run python app.py
 ```
 
 3. Open your browser and go to `http://localhost:7860/` to see the app in action.
